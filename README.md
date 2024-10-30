@@ -29,7 +29,6 @@ AI 모델을 활용해 작업할 때 자주 사용되는 프롬프트를 관리�
 - Frontend:
   - JavaScript, HTML, CSS
   - Vue.js (v3.x)
-  - Vuedraggable (v2.24.3): 드래그 앤 드롭 기능 지원
 - UI 프레임워크:
   - PrimeVue (v3.12.1): Vue 기반 UI 컴포넌트
   - PrimeIcons (v6.0.1): 아이콘 라이브러리
@@ -38,7 +37,6 @@ AI 모델을 활용해 작업할 때 자주 사용되는 프롬프트를 관리�
 - 빌드 도구:
   - Vite (v5.4.10): 빠른 빌드 및 HMR 지원
   - @vitejs/plugin-vue (v5.1.4): Vue 지원 플러그인
-  - @vitejs/plugin-legacy (v5.4.3): 레거시 브라우저 지원을 위한 플러그인
 - 데이터베이스: Chrome Sync Storage (확장 프로그램 전용 스토리지)
 
 ## 추가 개선 사항
