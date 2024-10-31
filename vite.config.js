@@ -6,13 +6,6 @@ import path from 'path';
 export default defineConfig({
   plugins: [
     vue(),
-    createHtmlPlugin({
-      inject: {
-        data: {
-          injectScript: `<script src="./your-inline-script.js"></script>`
-        }
-      }
-    })
   ],
   resolve: {
     alias: {
@@ -21,7 +14,19 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      input: 'index.html',
+      input: {
+        main: 'index.html',
+        contentScript: 'src/content-script/index.js',
+      },
+      output: {
+        entryFileNames: (chunk) => {
+          console.log(chunk)
+          if (chunk.name === 'contentScript') {
+            return 'content-script/index.js';
+          }
+          return 'assets/[name].js'
+        }
+      }
     },
     commonjsOptions: {
       transformMixedEsModules: true,
