@@ -28,16 +28,19 @@ export const store = {
     },
 
     // 프롬프트 로드 함수
-    loadPrompts() {
+    async loadPrompts() {
         if (this.loaded.value) return; // 이미 로드된 경우 실행하지 않음
-        this.storage.get('prompts', (data) => {
-            // 불러온 데이터가 배열인지 확인하고, 아니면 빈 배열로 초기화
-            if (Array.isArray(data.prompts)) {
-                this.prompts.value = data.prompts;
-            } else {
-                this.prompts.value = Object.values(data.prompts);
-            }
-            this.loaded.value = true; // 데이터 로딩 완료 표시
+        return new Promise((resolve) => {
+            this.storage.get('prompts', (data) => {
+                // 불러온 데이터가 배열인지 확인하고, 아니면 빈 배열로 초기화
+                if (Array.isArray(data.prompts)) {
+                    this.prompts.value = data.prompts;
+                } else {
+                    this.prompts.value = data.prompts ? Object.values(data.prompts) : [];
+                }
+                this.loaded.value = true; // 데이터 로딩 완료 표시
+                resolve();
+            });
         });
     },
 };

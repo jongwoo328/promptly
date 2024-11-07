@@ -1,12 +1,6 @@
 <template>
-  <div class="container" v-if="store.loaded">
-    <Textarea
-        v-model="newPrompt"
-        rows="3"
-        cols="30"
-        placeholder="새로운 프롬프트 입력"
-        class="textarea"
-    />
+  <div class="container" v-if="loaded">
+    <Textarea v-model="newPrompt" rows="3" cols="30" placeholder="새로운 프롬프트 입력" class="textarea"/>
     <div class="button-group">
       <Button label="프롬프트 추가" @click="addPrompt" class="add-button"/>
       <Menu :model="menuItems" popup ref="menu"/>
@@ -23,73 +17,34 @@
       </div>
     </Dialog>
 
-    <ul class="prompt-list">
-      <li v-for="(prompt, index) in prompts" :key="index" class="prompt-card">
+    <transition-group name="list" tag="ul" class="prompt-list">
+      <li v-for="(prompt, index) in prompts" :key="prompt.id" class="prompt-card">
         <div class="prompt-content">
           <div v-if="editingIndex === index" class="edit-mode">
             <!-- 인라인 편집 모드 (Textarea 사용) -->
-            <Textarea
-                v-model="editedPrompt"
-                rows="3"
-                class="input-edit"
-                autoResize
-            />
+            <Textarea v-model="editedPrompt" rows="3" class="input-edit" autoResize/>
             <div class="prompt-actions">
-              <Button
-                  icon="pi pi-check"
-                  class="save-button"
-                  @click="saveEditedPrompt(index)"
-                  aria-label="Save"
-              />
-              <Button
-                  icon="pi pi-times"
-                  class="cancel-button"
-                  @click="cancelEdit"
-                  aria-label="Cancel"
-              />
+              <Button icon="pi pi-check" class="save-button" @click="saveEditedPrompt(index)" aria-label="Save"/>
+              <Button icon="pi pi-times" class="cancel-button" @click="cancelEdit" aria-label="Cancel"/>
             </div>
           </div>
           <div v-else class="view-mode">
             <!-- 일반 모드 -->
-            <p class="prompt-text">{{ prompt }}</p>
+            <p class="prompt-text">{{ prompt.text }}</p>
             <div class="prompt-actions">
-              <Button
-                  icon="pi pi-pencil"
-                  class="edit-button"
-                  @click="editPrompt(index)"
-                  aria-label="Edit"
-              />
-              <Button
-                  icon="pi pi-copy"
-                  class="duplicate-button"
-                  @click="duplicatePrompt(index)"
-                  aria-label="Duplicate"
-              />
-              <Button
-                  icon="pi pi-trash"
-                  class="delete-button"
-                  @click="deletePrompt(index)"
-                  aria-label="Delete"
-              />
-              <Button
-                  icon="pi pi-arrow-up"
-                  class="move-up-button"
-                  @click="movePromptUp(index)"
-                  aria-label="Move Up"
-                  :disabled="index === 0"
-              />
-              <Button
-                  icon="pi pi-arrow-down"
-                  class="move-down-button"
-                  @click="movePromptDown(index)"
-                  aria-label="Move Down"
-                  :disabled="index === prompts.length - 1"
-              />
+              <Button icon="pi pi-pencil" class="edit-button" @click="editPrompt(index)" aria-label="Edit"/>
+              <Button icon="pi pi-copy" class="duplicate-button" @click="duplicatePrompt(index)"
+                      aria-label="Duplicate"/>
+              <Button icon="pi pi-trash" class="delete-button" @click="deletePrompt(index)" aria-label="Delete"/>
+              <Button icon="pi pi-arrow-up" class="move-up-button" @click="movePromptUp(index)" aria-label="Move Up"
+                      :disabled="index === 0"/>
+              <Button icon="pi pi-arrow-down" class="move-down-button" @click="movePromptDown(index)"
+                      aria-label="Move Down" :disabled="index === prompts.length - 1"/>
             </div>
           </div>
         </div>
       </li>
-    </ul>
+    </transition-group>
   </div>
   <div v-else>
     <p>로딩 중...</p>
@@ -116,17 +71,24 @@ export default {
     const fileInput = ref(null);
     const dialogVisible = ref(false);
     const importedPrompts = ref([]);
+    const loaded = ref(false);
 
     const toast = useToast();
 
-    // 스토어의 prompts 사용
-    const prompts = store.prompts;
+    // 프롬프트 데이터 구조를 [{ id, text }] 형태로 변경
+    const prompts = ref([]);
 
     // 스토어의 storage 사용
     const storage = store.storage;
 
     // 데이터 로드 완료 상태
-    store.loadPrompts();
+    store.loadPrompts().then(() => {
+      prompts.value = store.prompts.value.map((text, idx) => ({
+        id: Date.now() + idx,
+        text,
+      }));
+      loaded.value = true;
+    });
 
     const menuItems = [
       {
@@ -143,36 +105,23 @@ export default {
 
     const addPrompt = () => {
       if (newPrompt.value.trim()) {
-        store.prompts.value.push(newPrompt.value.trim());
-        storage.set({prompts: store.prompts.value}, () => {
-          toast.add({
-            severity: 'success',
-            summary: '성공',
-            detail: '프롬프트가 추가되었습니다.',
-            life: 1000,
-          });
-          newPrompt.value = '';
-        });
+        const newId = Date.now();
+        prompts.value.push({id: newId, text: newPrompt.value.trim()});
+        updateStorePrompts('프롬프트가 추가되었습니다.');
+        newPrompt.value = '';
       }
     };
 
     const editPrompt = (index) => {
       editingIndex.value = index;
-      editedPrompt.value = store.prompts.value[index];
+      editedPrompt.value = prompts.value[index].text;
     };
 
     const saveEditedPrompt = (index) => {
       if (editingIndex.value > -1 && editedPrompt.value.trim()) {
-        store.prompts.value[index] = editedPrompt.value;
-        storage.set({prompts: store.prompts.value}, () => {
-          toast.add({
-            severity: 'success',
-            summary: '성공',
-            detail: '프롬프트가 수정되었습니다.',
-            life: 1000,
-          });
-          editingIndex.value = -1; // 편집 모드 종료
-        });
+        prompts.value[index].text = editedPrompt.value;
+        updateStorePrompts('프롬프트가 수정되었습니다.');
+        editingIndex.value = -1; // 편집 모드 종료
       }
     };
 
@@ -182,37 +131,28 @@ export default {
     };
 
     const deletePrompt = (index) => {
-      store.prompts.value.splice(index, 1);
-      storage.set({prompts: store.prompts.value}, () => {
-        toast.add({
-          severity: 'success',
-          summary: '성공',
-          detail: '프롬프트가 삭제되었습니다.',
-          life: 1000,
-        });
-      });
+      prompts.value.splice(index, 1);
+      updateStorePrompts('프롬프트가 삭제되었습니다.');
     };
 
     const duplicatePrompt = (index) => {
-      const promptToDuplicate = store.prompts.value[index];
-      store.prompts.value.splice(index + 1, 0, promptToDuplicate); // 선택한 프롬프트 복제 후 바로 다음 위치에 삽입
-      storage.set({prompts: store.prompts.value}, () => {
-        toast.add({
-          severity: 'success',
-          summary: '성공',
-          detail: '프롬프트가 복제되었습니다.',
-          life: 1000,
-        });
-      });
+      const promptToDuplicate = {...prompts.value[index], id: Date.now()};
+      prompts.value.splice(index + 1, 0, promptToDuplicate); // 선택한 프롬프트 복제 후 바로 다음 위치에 삽입
+      updateStorePrompts('프롬프트가 복제되었습니다.');
     };
 
     const exportPrompts = () => {
-      const dataStr = JSON.stringify(store.prompts.value, null, 2);
+      const dataStr = JSON.stringify(prompts.value.map(p => p.text), null, 2);
       const blob = new Blob([dataStr], {type: 'application/json'});
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       const now = new Date();
-      const timestamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`; // 타임스탬프 생성
+      const timestamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(
+          now.getDate()
+      ).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(
+          2,
+          '0'
+      )}${String(now.getSeconds()).padStart(2, '0')}`; // 타임스탬프 생성
       a.href = url;
       a.download = `prompts_${timestamp}.json`; // 파일 이름에 타임스탬프 추가
       a.click();
@@ -226,7 +166,7 @@ export default {
         reader.onload = (e) => {
           try {
             const parsedPrompts = JSON.parse(e.target.result);
-            if (Array.isArray(parsedPrompts) && parsedPrompts.every(item => typeof item === 'string')) {
+            if (Array.isArray(parsedPrompts) && parsedPrompts.every((item) => typeof item === 'string')) {
               importedPrompts.value = parsedPrompts;
               dialogVisible.value = true; // 대화창 표시
             } else {
@@ -248,47 +188,50 @@ export default {
     };
 
     const overwritePrompts = () => {
-      store.prompts.value = importedPrompts.value;
-      storage.set({prompts: store.prompts.value}, () => {
-        toast.add({
-          severity: 'success',
-          summary: '성공',
-          detail: '프롬프트가 덮어쓰여졌습니다.',
-          life: 1000,
-        });
-        dialogVisible.value = false;
-      });
+      prompts.value = importedPrompts.value.map((text, idx) => ({
+        id: Date.now() + idx,
+        text,
+      }));
+      updateStorePrompts('프롬프트가 덮어쓰여졌습니다.');
+      dialogVisible.value = false;
     };
 
     const appendPrompts = () => {
-      store.prompts.value.push(...importedPrompts.value);
-      storage.set({prompts: store.prompts.value}, () => {
-        toast.add({
-          severity: 'success',
-          summary: '성공',
-          detail: '프롬프트가 추가되었습니다.',
-          life: 1000,
-        });
-        dialogVisible.value = false;
-      });
+      const newPrompts = importedPrompts.value.map((text, idx) => ({
+        id: Date.now() + prompts.value.length + idx,
+        text,
+      }));
+      prompts.value.push(...newPrompts);
+      updateStorePrompts('프롬프트가 추가되었습니다.');
+      dialogVisible.value = false;
     };
 
     const movePromptUp = (index) => {
       if (index > 0) {
-        const temp = store.prompts.value[index];
-        store.prompts.value[index] = store.prompts.value[index - 1];
-        store.prompts.value[index - 1] = temp;
-        storage.set({prompts: store.prompts.value});
+        prompts.value.splice(index - 1, 2, prompts.value[index], prompts.value[index - 1]);
+        updateStorePrompts();
       }
     };
 
     const movePromptDown = (index) => {
-      if (index < store.prompts.value.length - 1) {
-        const temp = store.prompts.value[index];
-        store.prompts.value[index] = store.prompts.value[index + 1];
-        store.prompts.value[index + 1] = temp;
-        storage.set({prompts: store.prompts.value});
+      if (index < prompts.value.length - 1) {
+        prompts.value.splice(index, 2, prompts.value[index + 1], prompts.value[index]);
+        updateStorePrompts();
       }
+    };
+
+    const updateStorePrompts = (message) => {
+      store.prompts.value = prompts.value.map((prompt) => prompt.text);
+      storage.set({prompts: store.prompts.value}, () => {
+        if (message) {
+          toast.add({
+            severity: 'success',
+            summary: '성공',
+            detail: message,
+            life: 1000,
+          });
+        }
+      });
     };
 
     return {
@@ -313,6 +256,7 @@ export default {
       importedPrompts,
       movePromptUp,
       movePromptDown,
+      loaded,
     };
   },
 };
@@ -343,12 +287,15 @@ export default {
 
 .add-button {
   flex-grow: 1;
-  height: 2.5em; /* 버튼 높이 설정 */
+  height: 2.5em;
+  /* 버튼 높이 설정 */
 }
 
 .hamburger-button {
-  width: 2.5em; /* 버튼 너비 설정 */
-  height: 2.5em; /* 버튼 높이 설정 */
+  width: 2.5em;
+  /* 버튼 너비 설정 */
+  height: 2.5em;
+  /* 버튼 높이 설정 */
   margin-left: 0.5em;
 }
 
@@ -391,7 +338,8 @@ export default {
   font-size: 1em;
 }
 
-.edit-mode, .view-mode {
+.edit-mode,
+.view-mode {
   display: flex;
   flex-direction: column;
 }
@@ -406,5 +354,22 @@ export default {
 .input-edit {
   width: 100%;
   margin-bottom: 0.5rem;
+}
+
+/* 애니메이션 효과 */
+.list-move,
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.3s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.list-leave-active {
+  position: absolute;
 }
 </style>
