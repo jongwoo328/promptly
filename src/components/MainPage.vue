@@ -166,7 +166,7 @@ export default {
       if (filledPrompt.value) {
         const encodedPrompt = encodeURIComponent(filledPrompt.value);
         const model = selectedModel.value;
-        const url = model === 'Claude sonnet'
+        const url = model.toLowerCase().includes('claude')
             ? `https://claude.ai/new?q=${encodedPrompt}`
             : `https://chat.openai.com/?model=${model}&q=${encodedPrompt}`;
         window.open(url, '_blank');
