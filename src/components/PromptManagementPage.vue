@@ -71,6 +71,20 @@
                   @click="deletePrompt(index)"
                   aria-label="Delete"
               />
+              <Button
+                  icon="pi pi-arrow-up"
+                  class="move-up-button"
+                  @click="movePromptUp(index)"
+                  aria-label="Move Up"
+                  :disabled="index === 0"
+              />
+              <Button
+                  icon="pi pi-arrow-down"
+                  class="move-down-button"
+                  @click="movePromptDown(index)"
+                  aria-label="Move Down"
+                  :disabled="index === prompts.length - 1"
+              />
             </div>
           </div>
         </div>
@@ -259,6 +273,24 @@ export default {
       });
     };
 
+    const movePromptUp = (index) => {
+      if (index > 0) {
+        const temp = store.prompts.value[index];
+        store.prompts.value[index] = store.prompts.value[index - 1];
+        store.prompts.value[index - 1] = temp;
+        storage.set({prompts: store.prompts.value});
+      }
+    };
+
+    const movePromptDown = (index) => {
+      if (index < store.prompts.value.length - 1) {
+        const temp = store.prompts.value[index];
+        store.prompts.value[index] = store.prompts.value[index + 1];
+        store.prompts.value[index + 1] = temp;
+        storage.set({prompts: store.prompts.value});
+      }
+    };
+
     return {
       prompts,
       newPrompt,
@@ -279,6 +311,8 @@ export default {
       fileInput,
       dialogVisible,
       importedPrompts,
+      movePromptUp,
+      movePromptDown,
     };
   },
 };
