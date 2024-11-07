@@ -18,7 +18,7 @@
     </Dialog>
 
     <transition-group name="list" tag="ul" class="prompt-list">
-      <li v-for="(prompt, index) in prompts" :key="prompt.id" class="prompt-card">
+      <li v-for="(prompt, index) in prompts" :key="prompt.id" class="prompt-card" @mouseover="hoveredIndex = index" @mouseleave="hoveredIndex = -1">
         <div class="prompt-content">
           <div v-if="editingIndex === index" class="edit-mode">
             <!-- 인라인 편집 모드 (Textarea 사용) -->
@@ -29,17 +29,21 @@
             </div>
           </div>
           <div v-else class="view-mode">
-            <!-- 일반 모드 -->
-            <p class="prompt-text">{{ prompt.text }}</p>
-            <div class="prompt-actions">
-              <Button icon="pi pi-pencil" class="edit-button" @click="editPrompt(index)" aria-label="Edit"/>
-              <Button icon="pi pi-copy" class="duplicate-button" @click="duplicatePrompt(index)"
-                      aria-label="Duplicate"/>
-              <Button icon="pi pi-trash" class="delete-button" @click="deletePrompt(index)" aria-label="Delete"/>
-              <Button icon="pi pi-arrow-up" class="move-up-button" @click="movePromptUp(index)" aria-label="Move Up"
-                      :disabled="index === 0"/>
-              <Button icon="pi pi-arrow-down" class="move-down-button" @click="movePromptDown(index)"
-                      aria-label="Move Down" :disabled="index === prompts.length - 1"/>
+            <div class="prompt-text-wrapper">
+              <p class="prompt-text">{{ prompt.text }}</p>
+              <transition name="fade">
+                <div class="prompt-actions-overlay" v-show="hoveredIndex === index">
+                  <transition name="fade">
+                    <div class="prompt-actions">
+                      <Button icon="pi pi-pencil" class="edit-button" @click="editPrompt(index)" aria-label="Edit"/>
+                      <Button icon="pi pi-copy" class="duplicate-button" @click="duplicatePrompt(index)" aria-label="Duplicate"/>
+                      <Button icon="pi pi-trash" class="delete-button" @click="deletePrompt(index)" aria-label="Delete"/>
+                      <Button icon="pi pi-arrow-up" class="move-up-button" @click="movePromptUp(index)" aria-label="Move Up" :disabled="index === 0"/>
+                      <Button icon="pi pi-arrow-down" class="move-down-button" @click="movePromptDown(index)" aria-label="Move Down" :disabled="index === prompts.length - 1"/>
+                    </div>
+                  </transition>
+                </div>
+              </transition>
             </div>
           </div>
         </div>
@@ -72,6 +76,7 @@ export default {
     const dialogVisible = ref(false);
     const importedPrompts = ref([]);
     const loaded = ref(false);
+    const hoveredIndex = ref(-1);
 
     const toast = useToast();
 
@@ -257,6 +262,7 @@ export default {
       movePromptUp,
       movePromptDown,
       loaded,
+      hoveredIndex,
     };
   },
 };
@@ -330,25 +336,47 @@ export default {
 .prompt-content {
   display: flex;
   flex-direction: column;
+  position: relative;
+}
+.prompt-text-wrapper {
+  position: relative;
 }
 
 .prompt-text {
-  margin: 0 0 0.5rem 0;
+  margin: 0;
   word-wrap: break-word;
   font-size: 1em;
+  padding: 1rem;
 }
 
-.edit-mode,
-.view-mode {
+.prompt-actions-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.8);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.prompt-card:hover .prompt-actions-overlay {
+  opacity: 1;
 }
 
 .prompt-actions {
   display: flex;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-  justify-content: flex-end;
+  gap: 1rem;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.prompt-card:hover .prompt-actions {
+  opacity: 1;
 }
 
 .input-edit {
@@ -371,5 +399,15 @@ export default {
 
 .list-leave-active {
   position: absolute;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
