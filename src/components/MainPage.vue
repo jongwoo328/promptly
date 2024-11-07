@@ -91,7 +91,7 @@ export default {
       {label: 'gpt-4', command: () => selectModel('gpt-4')},
       {label: 'gpt-4o', command: () => selectModel('gpt-4o')},
       {label: 'gpt-4o-mini', command: () => selectModel('gpt-4o-mini')},
-      {label: 'gpt-4o with Canvas', command: () => selectModel('gpt-4o-canmore')},
+      {label: 'gpt-4o-canmore', command: () => selectModel('gpt-4o-canmore')},
       {label: 'o1-preview', command: () => selectModel('o1-preview')},
       {label: 'o1-mini', command: () => selectModel('o1-mini')},
       {separator: true},
