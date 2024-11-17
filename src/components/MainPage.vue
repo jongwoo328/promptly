@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="dropdown-container">
-      <Dropdown
+      <Select
           :options="prompts"
           optionLabel="text"
           optionValue="value"
@@ -63,21 +63,9 @@
 import {computed, reactive, ref, watch, onMounted} from 'vue';
 import {store} from '../store.js';
 import {useToast} from 'primevue/usetoast';
-import SplitButton from 'primevue/splitbutton';
-import Dropdown from 'primevue/dropdown';
-import Button from 'primevue/button';
-import InputText from 'primevue/inputtext';
-import Textarea from 'primevue/textarea';
 
 export default {
   name: 'MainPage',
-  components: {
-    SplitButton,
-    Dropdown,
-    Button,
-    InputText,
-    Textarea,
-  },
   setup() {
     const toast = useToast();
     const selectedPrompt = ref(null);

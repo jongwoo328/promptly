@@ -3,14 +3,16 @@
     <Toast />
     <div class="tab-header">
       <Button
+          text
           label="MAIN"
           @click="activeTab = 'main'"
-          :class="{'p-button-text': true, 'active': activeTab === 'main'}"
+          :class="{'active': activeTab === 'main'}"
       />
       <Button
+          text
           label="MANAGE"
           @click="activeTab = 'manage'"
-          :class="{'p-button-text': true, 'active': activeTab === 'manage'}"
+          :class="{'active': activeTab === 'manage'}"
       />
     </div>
     <div class="tab-content">
