@@ -69,7 +69,7 @@ export default {
     Dialog,
   },
   setup() {
-    const storage = useChromeStorage()
+    const storage = useChromeStorage();
     const newPrompt = ref('');
     const editedPrompt = ref('');
     const editingIndex = ref(-1);
