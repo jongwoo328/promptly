@@ -58,9 +58,9 @@
 <script>
 import {ref} from 'vue';
 import {useToast} from 'primevue/usetoast';
-import {store} from '../store.js';
 import Menu from 'primevue/menu';
 import Dialog from 'primevue/dialog';
+import useChromeStorage from "../composables/useChromeStorage";
 
 export default {
   name: 'PromptManagementPage',
@@ -69,13 +69,13 @@ export default {
     Dialog,
   },
   setup() {
+    const storage = useChromeStorage();
     const newPrompt = ref('');
     const editedPrompt = ref('');
     const editingIndex = ref(-1);
     const fileInput = ref(null);
     const dialogVisible = ref(false);
     const importedPrompts = ref([]);
-    const loaded = ref(false);
     const hoveredIndex = ref(-1);
 
     const toast = useToast();
@@ -83,17 +83,13 @@ export default {
     // 프롬프트 데이터 구조를 [{ id, text }] 형태로 변경
     const prompts = ref([]);
 
-    // 스토어의 storage 사용
-    const storage = store.storage;
-
     // 데이터 로드 완료 상태
-    store.loadPrompts().then(() => {
-      prompts.value = store.prompts.value.map((text, idx) => ({
+    storage.loadPrompts().then((loadedPrompts) => {
+      prompts.value = loadedPrompts.value.map((text, idx) => ({
         id: Date.now() + idx,
         text,
       }));
-      loaded.value = true;
-    });
+    })
 
     const menuItems = [
       {
@@ -226,8 +222,8 @@ export default {
     };
 
     const updateStorePrompts = (message) => {
-      store.prompts.value = prompts.value.map((prompt) => prompt.text);
-      storage.set({prompts: store.prompts.value}, () => {
+      storage.prompts.value = prompts.value.map((prompt) => prompt.text);
+      storage.set({prompts: storage.prompts.value}, () => {
         if (message) {
           toast.add({
             severity: 'success',
@@ -254,15 +250,14 @@ export default {
       appendPrompts,
       editedPrompt,
       editingIndex,
-      store,
       menuItems,
       fileInput,
       dialogVisible,
       importedPrompts,
       movePromptUp,
       movePromptDown,
-      loaded,
       hoveredIndex,
+      loaded: storage.loaded
     };
   },
 };
