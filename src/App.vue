@@ -1,5 +1,4 @@
 <template>
-  <div id="app">
     <Toast />
     <div class="tab-header">
       <Button
@@ -19,7 +18,6 @@
       <MainPage v-if="activeTab === 'main'" />
       <PromptManagementPage v-else />
     </div>
-  </div>
 </template>
 
 <script>
@@ -79,5 +77,21 @@ export default {
 .tab-header .active {
   font-weight: bold;
   border-bottom: 2px solid #007ad9;
+}
+
+@media (prefers-color-scheme: dark) {
+  #app {
+    background-color: #333;
+    color: white;
+  }
+
+  .tab-header {
+    background-color: #333;
+    border-bottom: 1px solid #666;
+  }
+
+  .tab-header .active {
+    color: #007ad9;
+  }
 }
 </style>

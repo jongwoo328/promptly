@@ -261,4 +261,11 @@ export default {
 :deep(.p-button-claude) button.p-splitbutton-menubutton:before {
   border-left-color: rgba(255, 255, 255, 0.3) !important;
 }
+
+@media (prefers-color-scheme: dark) {
+  .result-block {
+    background-color: #333;
+    color: white;
+  }
+}
 </style>

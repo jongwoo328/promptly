@@ -1,7 +1,8 @@
 import {createApp} from 'vue';
 import App from './App.vue';
 import PrimeVue from 'primevue/config';
-import Nora from '@primevue/themes/Nora'
+import Nora from '@primevue/themes/Nora';
+import './reset_custom.css';
 
 // PrimeVue 테마 및 CSS
 import 'primeicons/primeicons.css';
