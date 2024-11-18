@@ -61,12 +61,13 @@
 
 <script>
 import {computed, reactive, ref, watch, onMounted} from 'vue';
-import {store} from '../store.js';
 import {useToast} from 'primevue/usetoast';
+import useChromeStorage from "../composables/useChromeStorage";
 
 export default {
   name: 'MainPage',
   setup() {
+    const storage = useChromeStorage();
     const toast = useToast();
     const selectedPrompt = ref(null);
     const variables = ref([]);
@@ -96,12 +97,12 @@ export default {
     // 모델 선택 함수
     const selectModel = (model) => {
       selectedModel.value = model;
-      store.storage.set({selectedModel: model});
+      storage.set({selectedModel: model});
     };
 
     // 컴포넌트가 마운트될 때 모델을 스토리지에서 불러옴
     onMounted(() => {
-      store.storage.get('selectedModel', (data) => {
+      storage.get('selectedModel', (data) => {
         if (data.selectedModel) {
           selectedModel.value = data.selectedModel;
         }
@@ -109,7 +110,7 @@ export default {
     });
 
     const prompts = computed(() => {
-      return store.prompts.value.map((prompt, index) => ({
+      return storage.prompts.value.map((prompt, index) => ({
         text: prompt,
         value: prompt,
         id: index,
@@ -189,7 +190,6 @@ export default {
       filledPrompt,
       runOnModel,
       copyToClipboard,
-      store,
       selectedModel,
       modelOptions,
       getButtonClass,

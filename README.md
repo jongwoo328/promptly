@@ -54,3 +54,4 @@ AI 모델을 활용해 작업할 때 자주 사용되는 프롬프트를 관리�
 - [ ] 신규 모델 - 퍼플렉시티 추가
 - [ ] chat 서비스의 UI에서 promptly 실행
 - [ ] 토스트 팝업 위치 조정 (가운데로)
+- [ ] storage.js를 composable로 교체 (by @jongwoo328)
