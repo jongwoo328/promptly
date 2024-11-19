@@ -264,8 +264,8 @@ export default {
 
 @media (prefers-color-scheme: dark) {
   .result-block {
-    background-color: #333;
-    color: white;
+    background-color: #131214;
+    border: 1px solid #131214;
   }
 }
 </style>

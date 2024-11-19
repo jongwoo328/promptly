@@ -76,17 +76,16 @@ export default {
 /* 선택된 탭 버튼 스타일 */
 .tab-header .active {
   font-weight: bold;
-  border-bottom: 2px solid #007ad9;
+  border-bottom: 1px solid #007ad9;
 }
 
 @media (prefers-color-scheme: dark) {
   #app {
-    background-color: #333;
-    color: white;
+    background-color:#0A0A0B;
   }
 
   .tab-header {
-    background-color: #333;
+    background-color: #0A0A0B;
     border-bottom: 1px solid #666;
   }
 

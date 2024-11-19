@@ -408,12 +408,12 @@ export default {
 
 @media (prefers-color-scheme: dark) {
   .prompt-card {
-    background-color: #333;
-    color: white;
+    background-color: #131214;
+    border: 1px solid #131214;
   }
 
   .prompt-actions-overlay {
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgb(19, 18, 20, 0.7);
   }
 }
 </style>
