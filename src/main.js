@@ -1,7 +1,7 @@
 import {createApp} from 'vue';
 import App from './App.vue';
 import PrimeVue from 'primevue/config';
-import Nora from '@primevue/themes/Nora';
+import Aura from '@primevue/themes/Aura';
 import './reset_custom.css';
 
 // PrimeVue 테마 및 CSS
@@ -22,7 +22,7 @@ import {definePreset} from "@primevue/themes";
 
 const app = createApp(App);
 
-const preset = definePreset(Nora, {
+const preset = definePreset(Aura, {
     semantic: {
         primary: {
             50: '{sky.50}',

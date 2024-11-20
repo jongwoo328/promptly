@@ -74,9 +74,13 @@ export default {
 }
 
 /* 선택된 탭 버튼 스타일 */
-.tab-header .active {
+.tab-header .active,
+.tab-header .active:hover {
   font-weight: bold;
-  border-bottom: 1px solid #007ad9;
+  border-bottom: 2px solid var(--p-button-text-primary-color) !important;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  color: var(--p-button-text-primary-color) !important;
 }
 
 @media (prefers-color-scheme: dark) {
