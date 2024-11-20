@@ -408,8 +408,8 @@ export default {
 
 @media (prefers-color-scheme: dark) {
   .prompt-card {
-    background-color: #131214;
-    border: 1px solid #131214;
+    background-color: #18181b;
+    border: 1px solid #18181b;
   }
 
   .prompt-actions-overlay {
