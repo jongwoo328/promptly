@@ -413,7 +413,7 @@ export default {
   }
 
   .prompt-actions-overlay {
-    background-color: rgb(19, 18, 20, 0.7);
+    background-color: rgba(24, 24, 27, 0.7);
   }
 }
 </style>
