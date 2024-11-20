@@ -237,28 +237,28 @@ export default {
 }
 
 /* Claude 모델용 버튼 스타일 수정 */
-:deep(.p-button-claude) button.p-splitbutton-defaultbutton {
+:deep(.p-button-claude) button {
   background: #AB4E1C !important;
   border-color: #AB4E1C !important;
 }
 
-:deep(.p-button-claude) button.p-splitbutton-defaultbutton:hover {
+:deep(.p-button-claude) button:hover {
   background: #8B3E12 !important;
   border-color: #8B3E12 !important;
 }
 
-:deep(.p-button-claude) button.p-splitbutton-menubutton {
+:deep(.p-button-claude) button {
   background: #AB4E1C !important;
   border-color: #AB4E1C !important;
 }
 
-:deep(.p-button-claude) button.p-splitbutton-menubutton:hover {
+:deep(.p-button-claude) button:hover {
   background: #8B3E12 !important;
   border-color: #8B3E12 !important;
 }
 
 /* Split 버튼 사이의 구분선 색상도 맞춤 */
-:deep(.p-button-claude) button.p-splitbutton-menubutton:before {
+:deep(.p-button-claude) button:before {
   border-left-color: rgba(255, 255, 255, 0.3) !important;
 }
 
